@@ -39,62 +39,9 @@ npm install catsa-janga
 
 ## Usage
 
-### Basic Example - Using `createWithRestore`
+### Basic Example
 
-The recommended way to use CatsaJanga is with the `createWithRestore` method:
-
-```typescript
-import { CatsaJanga } from 'catsa-janga';
-
-// Define your data structure
-type MyData = {
-    items: string[];
-    processedCount: number;
-    timestamp: Date;
-};
-
-// Create and restore in one step
-const { saver, data } = await CatsaJanga.createWithRestore<MyData>({
-    getData: () => ({
-        ...data,
-        timestamp: new Date(), // Update timestamp on save
-    }),
-    logger: console, // Use console as logger
-    outputFile: 'progress.json',
-    initialData: {
-        items: [],
-        processedCount: 0,
-        timestamp: new Date(),
-    },
-});
-
-// Your long-running process
-async function processItems() {
-    for (let i = 0; i < 1000; i++) {
-        // Simulate work
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        // Update data
-        data.items.push(`Item ${i}`);
-        data.processedCount++;
-
-        // Optionally save progress periodically
-        if (i % 100 === 0) {
-            await saver.saveProgress();
-        }
-    }
-
-    // Save final progress
-    await saver.saveProgress();
-}
-
-// Start processing
-await processItems();
-```
-
-### Alternative Approach - Using `Object.assign`
-
-If you prefer to have more control over initialization, you can use the traditional method:
+The recommended way to use CatsaJanga is:
 
 ```typescript
 import { CatsaJanga } from 'catsa-janga';
@@ -123,9 +70,7 @@ const saver = new CatsaJanga<MyData>({
     outputFile: 'progress.json',
 });
 
-// Restore previous progress if available
-const restored = await saver.restore();
-Object.assign(data, restored);
+Object.assign(data, await saver.restore());
 
 // Your long-running process
 async function processItems() {
@@ -171,7 +116,7 @@ const initialData: OCRResult = {
 };
 
 // Create and restore in one step
-const { saver, data } = await CatsaJanga.createWithRestore<OCRResult>({
+const saver = new CatsaJanga<OCRResult>({
     getData: () => ({
         ...data,
         pages: data.pages.toSorted((a, b) => a.page - b.page),
@@ -179,8 +124,9 @@ const { saver, data } = await CatsaJanga.createWithRestore<OCRResult>({
     }),
     logger: console,
     outputFile: 'ocr-progress.json',
-    initialData,
 });
+
+Object.assign(data, await saver.restore());
 
 // Process pages (if we crash, we'll resume where we left off)
 for (const file of files) {
@@ -238,14 +184,6 @@ async saveProgress(): Promise<void>
 ```
 
 Saves the current progress to the output file.
-
-##### createWithRestore (static)
-
-```typescript
-static async createWithRestore<T>(options: CatsaJangaOptions<T>): Promise<{ saver: CatsaJanga<T>, data: T }>
-```
-
-Creates a CatsaJanga instance and immediately restores data if available. Returns both the saver instance and the restored or initial data.
 
 ### Interfaces
 
