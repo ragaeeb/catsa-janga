@@ -165,40 +165,6 @@ describe('CatsaJanga', () => {
         expect(result).toBe(initialData);
     });
 
-    test('createWithRestore creates instance and restores data', async () => {
-        const tempFile = getTempFilePath();
-        tempFiles.push(tempFile);
-
-        const testData: any = { restoredValue: true };
-
-        await Bun.write(tempFile, JSON.stringify(testData));
-
-        const { data, saver } = await CatsaJanga.createWithRestore({
-            getData: () => ({ test: 'data' }),
-            logger: mockLogger,
-            outputFile: tempFile,
-        });
-
-        expect(saver).toBeInstanceOf(CatsaJanga);
-        expect(data).toEqual(testData);
-    });
-
-    test('createWithRestore returns initial data when no file exists', async () => {
-        const tempFile = getTempFilePath();
-        tempFiles.push(tempFile);
-
-        const initialData: any = { initial: true };
-        const { data, saver } = await CatsaJanga.createWithRestore({
-            getData: () => ({ test: 'data' }),
-            initialData,
-            logger: mockLogger,
-            outputFile: tempFile,
-        });
-
-        expect(saver).toBeInstanceOf(CatsaJanga);
-        expect(data).toBe(initialData);
-    });
-
     test('SIGINT handler saves progress and exits', async () => {
         const tempFile = getTempFilePath();
         tempFiles.push(tempFile);

@@ -47,18 +47,6 @@ export class CatsaJanga<T> {
     }
 
     /**
-     * Creates a CatsaJanga and immediately restores data if available
-     * @param options Configuration options
-     * @returns A promise with the CatsaJanga instance and the restored or initial data
-     */
-    static async createWithRestore<T>(options: CatsaJangaOptions<T>): Promise<{ data: T; saver: CatsaJanga<T> }> {
-        const saver = new CatsaJanga<T>(options);
-        const restoredData = await saver.restore();
-        const data = restoredData !== undefined ? restoredData : (options.initialData as T);
-        return { data, saver };
-    }
-
-    /**
      * Checks for an existing file and restores data if present
      * @returns The restored data or undefined if no file exists
      */
@@ -102,24 +90,28 @@ export class CatsaJanga<T> {
      * @private
      */
     private setupProcessHandlers() {
-        // Common handler for all exit scenarios
+        let isShuttingDown = false;
+
         const handleExit = async (signal: string, exitCode: number) => {
+            if (isShuttingDown) {
+                return;
+            }
+
+            isShuttingDown = true;
+
             this.logger.info(`Process ${signal}. Saving progress...`);
             await this.saveProgress();
             process.exit(exitCode);
         };
 
-        // Handle shutdown signals
         process.on('SIGINT', () => handleExit('interrupted (SIGINT)', 0));
         process.on('SIGTERM', () => handleExit('terminated (SIGTERM)', 0));
 
-        // Handle uncaught exceptions
         process.on('uncaughtException', (error) => {
             this.logger.error(`Uncaught exception: ${error.message}`);
             handleExit('crashed with uncaught exception', 1);
         });
 
-        // Handle unhandled promise rejections
         process.on('unhandledRejection', (reason) => {
             this.logger.error(`Unhandled promise rejection: ${reason}`);
             handleExit('crashed with unhandled rejection', 1);
