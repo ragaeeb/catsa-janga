@@ -18,7 +18,7 @@
     },
     "engines": {
         "bun": ">=1.2.8",
-        "node": ">=23.0.0"
+        "node": ">=22.0.0"
     },
     "exports": {
         ".": "./dist/index.js"
@@ -38,11 +38,13 @@
     "name": "catsa-janga",
     "repository": {
         "type": "git",
-        "url": "github.com:ragaeeb/catsa-janga.git"
+        "url": "https://github.com/ragaeeb/catsa-janga.git"
     },
     "scripts": {
         "build": "tsup",
-        "test": "bun test"
+        "test": "bun test",
+        "lint": "eslint .",
+        "typecheck": "tsc --noEmit"
     },
     "source": "src/index.ts",
     "type": "module",

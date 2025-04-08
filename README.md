@@ -94,7 +94,7 @@ await processItems();
 
 ### Alternative Approach - Using `Object.assign`
 
-If you prefer more control over initialization, you can use the traditional method:
+If you prefer to have more control over initialization, you can use the traditional method:
 
 ```typescript
 import { CatsaJanga } from 'catsa-janga';
@@ -125,9 +125,7 @@ const saver = new CatsaJanga<MyData>({
 
 // Restore previous progress if available
 const restored = await saver.restore();
-if (restored) {
-    Object.assign(data, restored);
-}
+Object.assign(data, restored);
 
 // Your long-running process
 async function processItems() {
@@ -288,7 +286,3 @@ When any of these events occur, the progress will be saved before the process ex
 ## License
 
 MIT
-
-## Contributing
-
-Contributions welcome! Please feel free to submit a Pull Request.
