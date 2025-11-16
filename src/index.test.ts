@@ -1,5 +1,5 @@
 import { afterAll, afterEach, describe, expect, spyOn, test } from 'bun:test';
-import { existsSync, unlinkSync } from 'node:fs';
+import { existsSync, promises as fsPromises, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import process from 'node:process';
@@ -163,6 +163,39 @@ describe('CatsaJanga', () => {
         const result = await saver.restore();
 
         expect(result).toBe(initialData);
+    });
+
+    test('restore returns initial data when stat fails', async () => {
+        const tempFile = getTempFilePath();
+        tempFiles.push(tempFile);
+
+        const initialData: any = { fallback: 'stat-error' };
+
+        const logger = {
+            error: () => {},
+            info: () => {},
+            warn: () => {},
+        };
+
+        const errorSpy = spyOn(logger, 'error');
+        const statSpy = spyOn(fsPromises, 'stat').mockImplementation(() => {
+            throw new Error('stat failure');
+        });
+
+        const saver = new CatsaJanga({
+            getData: () => ({ test: 'data' }),
+            initialData,
+            logger,
+            outputFile: tempFile,
+        });
+
+        const result = await saver.restore();
+
+        expect(result).toBe(initialData);
+        expect(errorSpy).toHaveBeenCalled();
+
+        statSpy.mockRestore();
+        errorSpy.mockRestore();
     });
 
     test('SIGINT handler saves progress and exits', async () => {

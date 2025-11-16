@@ -1,11 +1,11 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsdown';
 
 export default defineConfig({
     clean: true,
     dts: true,
     entry: ['src/index.ts'],
-    format: ['esm'],
+    format: ['es'],
     minify: true,
     sourcemap: true,
-    target: 'esnext',
+    target: 'node20',
 });
