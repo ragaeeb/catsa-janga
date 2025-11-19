@@ -20,12 +20,12 @@ A utility library for automatically saving and restoring progress in long-runnin
 
 ## Features
 
-- 💾 Automatically saves progress data to a file
-- 🔄 Restores progress data when restarting a process
-- 🛑 Handles process termination signals (SIGINT, SIGTERM)
-- ⚠️ Captures unhandled exceptions and promise rejections
-- 🔍 Lightweight with no external dependencies
-- 📝 TypeScript support
+- 💾 Automatically persists progress data to disk during long-running operations
+- 🔄 Restores either the last saved snapshot or supplied `initialData` on restart
+- 🛑 Handles termination signals (SIGINT, SIGTERM) with graceful shutdown logic
+- ⚠️ Captures uncaught exceptions and unhandled promise rejections before exiting
+- 🛡️ Falls back safely when file system checks or JSON parsing fail
+- 📝 Ships with full TypeScript types and emits `.d.ts` files during the build step
 
 ## Installation
 
@@ -70,7 +70,7 @@ const saver = new CatsaJanga<MyData>({
     outputFile: 'progress.json',
 });
 
-Object.assign(data, await saver.restore());
+Object.assign(data, (await saver.restore()) ?? data);
 
 // Your long-running process
 async function processItems() {
@@ -126,7 +126,7 @@ const saver = new CatsaJanga<OCRResult>({
     outputFile: 'ocr-progress.json',
 });
 
-Object.assign(data, await saver.restore());
+Object.assign(data, (await saver.restore()) ?? data);
 
 // Process pages (if we crash, we'll resume where we left off)
 for (const file of files) {
@@ -175,7 +175,7 @@ constructor(options: CatsaJangaOptions<T>)
 async restore(): Promise<T | undefined>
 ```
 
-Checks for an existing progress file and restores data if present. Returns the restored data, the initialData (if provided and no saved data exists), or `undefined`.
+Checks for an existing progress file and restores data if present. Returns the restored data, the `initialData` (if provided and no saved data exists), or `undefined`. Any file system or JSON parsing errors are logged and result in the safe fallback path.
 
 ##### saveProgress
 
@@ -184,6 +184,20 @@ async saveProgress(): Promise<void>
 ```
 
 Saves the current progress to the output file.
+
+### Development
+
+The project now uses the lightweight [`tsdown`](https://tsdown.dev) build pipeline and Biome for linting/formatting. Update `tsdown.config.ts` when adding new entry points, formats, or declaration requirements—`bun run build` simply shells out to the local `tsdown` binary and should not be replaced with custom scripts.
+
+| Task | Command |
+| --- | --- |
+| Install dependencies | `bun install` |
+| Lint | `bun run lint` |
+| Format | `bun run format` |
+| Build | `bun run build` |
+| Test | `bun test` |
+
+`bun run build` emits optimized ESM output to `dist/` and generates `.d.ts` files alongside the compiled code using the shared `tsdown.config.ts` definition.
 
 ### Interfaces
 

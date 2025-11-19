@@ -92,6 +92,11 @@ export class CatsaJanga<T> {
     private setupProcessHandlers() {
         let isShuttingDown = false;
 
+        /**
+         * Handles graceful shutdown logic for supported process signals.
+         * @param signal Human-readable description of the termination trigger.
+         * @param exitCode Exit code that should be used when terminating the process.
+         */
         const handleExit = async (signal: string, exitCode: number) => {
             if (isShuttingDown) {
                 return;

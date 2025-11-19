@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsdown';
 
 export default defineConfig({
     clean: true,
@@ -7,5 +7,5 @@ export default defineConfig({
     format: ['esm'],
     minify: true,
     sourcemap: true,
-    target: 'esnext',
+    target: 'node22',
 });
