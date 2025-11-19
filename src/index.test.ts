@@ -1,4 +1,4 @@
-import { afterAll, afterEach, describe, expect, spyOn, test } from 'bun:test';
+import { afterAll, afterEach, describe, expect, it, spyOn } from 'bun:test';
 import { existsSync, promises as fsPromises, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -56,7 +56,7 @@ describe('CatsaJanga', () => {
         }
     });
 
-    test('constructor sets up event handlers', () => {
+    it('constructor sets up event handlers', () => {
         const tempFile = getTempFilePath();
         tempFiles.push(tempFile);
 
@@ -76,7 +76,7 @@ describe('CatsaJanga', () => {
         );
     });
 
-    test('saveProgress saves data to file', async () => {
+    it('saveProgress saves data to file', async () => {
         const tempFile = getTempFilePath();
         tempFiles.push(tempFile);
 
@@ -95,7 +95,7 @@ describe('CatsaJanga', () => {
         expect(savedData).toEqual(testData);
     });
 
-    test('restore returns initialData when file does not exist', async () => {
+    it('restore returns initialData when file does not exist', async () => {
         const tempFile = getTempFilePath();
         tempFiles.push(tempFile);
 
@@ -112,7 +112,7 @@ describe('CatsaJanga', () => {
         expect(result).toBe(initialData);
     });
 
-    test('restore returns undefined when file does not exist and no initialData', async () => {
+    it('restore returns undefined when file does not exist and no initialData', async () => {
         const tempFile = getTempFilePath();
         tempFiles.push(tempFile);
 
@@ -127,7 +127,7 @@ describe('CatsaJanga', () => {
         expect(result).toBeUndefined();
     });
 
-    test('restore returns data when file exists', async () => {
+    it('restore returns data when file exists', async () => {
         const tempFile = getTempFilePath();
         tempFiles.push(tempFile);
 
@@ -146,7 +146,7 @@ describe('CatsaJanga', () => {
         expect(result).toEqual(testData);
     });
 
-    test('restore handles corrupt json files', async () => {
+    it('restore handles corrupt json files', async () => {
         const tempFile = getTempFilePath();
         tempFiles.push(tempFile);
 
@@ -165,7 +165,7 @@ describe('CatsaJanga', () => {
         expect(result).toBe(initialData);
     });
 
-    test('restore returns initial data when stat fails', async () => {
+    it('restore returns initial data when stat fails', async () => {
         const tempFile = getTempFilePath();
         tempFiles.push(tempFile);
 
@@ -198,7 +198,7 @@ describe('CatsaJanga', () => {
         errorSpy.mockRestore();
     });
 
-    test('SIGINT handler saves progress and exits', async () => {
+    it('SIGINT handler saves progress and exits', async () => {
         const tempFile = getTempFilePath();
         tempFiles.push(tempFile);
 

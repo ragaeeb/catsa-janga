@@ -4,8 +4,8 @@ export default defineConfig({
     clean: true,
     dts: true,
     entry: ['src/index.ts'],
-    format: ['es'],
+    format: ['esm'],
     minify: true,
     sourcemap: true,
-    target: 'node20',
+    target: 'node22',
 });
